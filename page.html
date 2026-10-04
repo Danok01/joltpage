@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jolt Result Management System - 100% Free Isolated School Processing</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Chart.js for Student Performance Visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- html2pdf.js for Client-side PDF Report Card Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                        },
+                        accent: {
+                            500: '#10b981',
+                            600: '#059669',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom styles for animations & PDF printable view */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        
+        .toast-enter {
+            transform: translateY(100%);
+            opacity: 0;
+        }
+        .toast-show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Printable PDF / Print CSS specific styling */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #report-card-printable, #report-card-printable * {
+                visibility: visible;
+            }
+            #report-card-printable {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                margin: 0;
+                padding: 20px;
+                box-shadow: none !important;
+                border: none !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased selection:bg-brand-500 selection:text-white">
+
+    <!-- Navigation Header -->
+    <nav class="sticky top-0 z-40 w-full glass-card border-b border-slate-200/80 shadow-sm transition-all duration-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 sm:h-20">
+                
+                <!-- Brand Logo -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="window.scrollTo({top:0, behavior:'smooth'})">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-brand-500/30">
+                        <i class="fa-solid fa-bolt text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="text-xl font-extrabold tracking-tight text-slate-900">Jolt<span class="text-brand-600">RMS</span></span>
+                        <span class="hidden sm:inline-block ml-2 px-2 py-0.5 text-xs font-semibold bg-emerald-100 text-emerald-800 rounded-full border border-emerald-200">100% FREE</span>
+                    </div>
+                </div>
+
+                <!-- Navigation Links -->
+                <div class="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-600">
+                    <a href="#features" class="hover:text-brand-600 transition-colors">Features</a>
+                    <!-- <a href="#how-it-works" class="hover:text-brand-600 transition-colors">How It Works</a> -->
+                    <a href="#demo-app" class="hover:text-brand-600 transition-colors flex items-center gap-1.5 text-brand-600 font-semibold">
+                        <span class="relative flex h-2 w-2">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-2 w-2 bg-indigo-600"></span>
+                        </span>
+                        Live Interactive Demo
+                    </a>
+                </div>
+
+                <!-- Action CTA & Tenant Switcher Quick Jump -->
+                <div class="flex items-center space-x-3">
+                    
+                    <a href="https://jolt-zjbo.onrender.com/" class="inline-flex items-center justify-center px-5 py-2.5 text-sm font-semibold text-white bg-brand-600 rounded-xl hover:bg-brand-700 transition-all shadow-md shadow-brand-600/20 active:scale-95">
+                        Register School <i class="fa-solid fa-arrow-right ml-2 text-xs"></i>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative overflow-hidden pt-12 pb-20 lg:pt-20 lg:pb-28 bg-gradient-to-b from-brand-50/50 via-slate-50 to-white">
+        <div class="absolute inset-0 z-0 opacity-30 bg-[radial-gradient(#4f46e5_1px,transparent_1px)] [background-size:16px_16px]"></div>
+        
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-100/80 border border-brand-200 text-brand-700 text-xs font-semibold mb-8 animate-fade-in">
+                <i class="fa-solid fa-shield-halved text-brand-600"></i>
+                JOLT Result Management System
+            </div>
+
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-[1.15] max-w-4xl mx-auto">
+                Simplified Result Processing. <br class="hidden sm:block">
+                <span class="bg-gradient-to-r from-brand-600 via-indigo-600 to-emerald-500 bg-clip-text text-transparent">Isolated Per School Institution.</span>
+            </h1>
+
+            <p class="mt-6 text-lg sm:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
+                Jolt RMS gives school administrators complete control over teachers, classes, and subjects while streamlining continuous assessments and generating <strong class="text-slate-800">1-click official student PDF report cards</strong>.
+            </p>
+
+            <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="https://jolt-zjbo.onrender.com/" class="w-full sm:w-auto px-8 py-4 text-base font-bold text-white bg-brand-600 rounded-2xl hover:bg-brand-700 transition-all shadow-lg shadow-brand-600/30 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-play"></i> Try Interactive Portal
+                </a>
+                <button onclick="openRegisterSchoolModal()" class="w-full sm:w-auto px-8 py-4 text-base font-bold text-slate-800 bg-white border border-slate-300 rounded-2xl hover:bg-slate-50 transition-all shadow-sm flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-plus-circle text-brand-600"></i> Onboard New Institution (Free)
+                </button>
+            </div>
+
+            <!-- Trust Highlights -->
+            <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto border-t border-slate-200 pt-8 text-slate-600 text-sm">
+                <div class="flex items-center justify-center gap-2 font-semibold">
+                    <i class="fa-solid fa-check text-emerald-500"></i> 100% Free
+                </div>
+                <div class="flex items-center justify-center gap-2 font-semibold">
+                    <i class="fa-solid fa-lock text-brand-600"></i> Zero Cross-School Leakage
+                </div>
+                <div class="flex items-center justify-center gap-2 font-semibold">
+                    <i class="fa-solid fa-file-pdf text-rose-500"></i> Printable PDF Terminal Reports
+                </div>
+                <div class="flex items-center justify-center gap-2 font-semibold">
+                    <i class="fa-solid fa-bolt text-amber-500"></i> Real-Time Grade Calculation
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Feature Highlights Section -->
+    <section id="features" class="py-16 bg-white border-y border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-xs font-bold text-brand-600 uppercase tracking-widest mb-2">Core Architecture</h2>
+                <p class="text-3xl font-extrabold text-slate-900 tracking-tight sm:text-4xl">Everything your school needs to compute grades seamlessly</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="p-8 rounded-3xl bg-slate-50 border border-slate-200/80 hover:shadow-lg transition-all">
+                    <div class="w-12 h-12 rounded-2xl bg-brand-100 text-brand-600 flex items-center justify-center text-xl font-bold mb-6">
+                        <i class="fa-solid fa-building-columns"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-3">Isolated School Data</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed">
+                        Each school institution gets an isolated tenant workspace. Teachers, students, subjects, and grade definitions are securely partitioned per institution.
+                    </p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="p-8 rounded-3xl bg-slate-50 border border-slate-200/80 hover:shadow-lg transition-all">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl font-bold mb-6">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-3">Teacher Scorebook</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed">
+                        Teachers effortlessly enter CA (30%), and Exam (70%) scores. Jolt automatically computes totals, letter grades (A-F), and Pass/Fail standings.
+                    </p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="p-8 rounded-3xl bg-slate-50 border border-slate-200/80 hover:shadow-lg transition-all">
+                    <div class="w-12 h-12 rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center text-xl font-bold mb-6">
+                        <i class="fa-solid fa-file-invoice"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-3">Instant PDF Terminal Reports</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed">
+                        Generate official terminal report sheets complete with letterheads, grade distribution radar charts, class position rankings, and principal stamps.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- LIVE INTERACTIVE APPLICATION SIMULATOR
+    <section id="demo-app" class="py-16 bg-slate-900 text-white relative">
+       
+    </section>
+
+    <!-- NEW SCHOOL REGISTRATION MODAL -->
+    <div id="register-school-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm hidden">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-200 relative animate-fade-in text-slate-900">
+            
+            <button onclick="closeRegisterSchoolModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 transition-colors text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="flex items-center space-x-3 mb-6">
+                <div class="w-10 h-10 rounded-xl bg-brand-100 text-brand-600 flex items-center justify-center text-lg font-bold">
+                    <i class="fa-solid fa-school"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-extrabold text-slate-900">Onboard New Institution</h3>
+                    <p class="text-xs text-slate-500">Register your school for 100% free result processing</p>
+                </div>
+            </div>
+
+            <form onsubmit="handleSchoolRegistration(event)" class="space-y-4 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">School Institution Name *</label>
+                    <input type="text" id="reg-school-name" required placeholder="e.g. Oakridge Heights College" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">School Code / Abbr *</label>
+                        <input type="text" id="reg-school-code" required placeholder="e.g. OHC" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:outline-none uppercase">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Principal Name *</label>
+                        <input type="text" id="reg-principal-name" required placeholder="Dr. Arthur Pendelton" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Motto or Tagline</label>
+                    <input type="text" id="reg-motto" placeholder="Knowledge for Tomorrow" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Administrator Email</label>
+                    <input type="email" id="reg-admin-email" required placeholder="admin@oakridge.edu" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                </div>
+
+                <div class="pt-4 flex items-center justify-end space-x-3">
+                    <button type="button" onclick="closeRegisterSchoolModal()" class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 font-semibold hover:bg-slate-50 transition-colors">Cancel</button>
+                    <button type="submit" class="px-6 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold transition-all shadow-md shadow-brand-600/20">
+                        Create School Workspace
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- ADD STAFF MODAL -->
+    <div id="add-staff-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm hidden">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 relative text-slate-900">
+            <button onclick="closeAddStaffModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            
+            <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-user-plus text-brand-600"></i> Add Teaching Staff
+            </h3>
+
+            <form onsubmit="handleAddStaffSubmit(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-semibold mb-1">Full Name</label>
+                    <input type="text" id="staff-name" required placeholder="Mr. David Miller" class="w-full px-3 py-2 rounded-xl border border-slate-300">
+                </div>
+                <div>
+                    <label class="block font-semibold mb-1">Assigned Subject</label>
+                    <input type="text" id="staff-subject" required placeholder="Mathematics / Chemistry" class="w-full px-3 py-2 rounded-xl border border-slate-300">
+                </div>
+                <div>
+                    <label class="block font-semibold mb-1">Assigned Class</label>
+                    <input type="text" id="staff-class" required placeholder="Grade 10 - Alpha" class="w-full px-3 py-2 rounded-xl border border-slate-300">
+                </div>
+                <div class="pt-3 flex justify-end gap-2">
+                    <button type="button" onclick="closeAddStaffModal()" class="px-4 py-2 border rounded-xl">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-brand-600 text-white font-bold rounded-xl">Add Staff</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION STACK -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-950 border-t border-slate-800 text-slate-400 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs space-y-4">
+            <div class="flex items-center justify-center space-x-2 text-white font-extrabold text-lg">
+                <div class="w-7 h-7 rounded-lg bg-brand-600 flex items-center justify-center text-white text-sm">
+                    <i class="fa-solid fa-bolt"></i>
+                </div>
+                <span>Jolt RMS</span>
+            </div>
+            <p>100% Free Multi-Tenant Result Processing System for Educational Institutions.</p>
+            <p class="text-slate-600">&copy; 2026 Jolt Result Management System. All data strictly partitioned per school tenant.</p>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT APP STATE & INTERACTION LOGIC -->
+</body>
+</html>
